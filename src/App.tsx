@@ -83,7 +83,7 @@ function App() {
     ) {
       clickInfo.event.remove();
       try {
-        // Remove event data from Firestore
+        // Remove event data from Firestor
         await deleteDoc(doc(db, 'list', clickInfo.event.id));
         console.log(`Document with ID ${clickInfo.event.id} deleted`);
         console.log(clickInfo.event.id)
