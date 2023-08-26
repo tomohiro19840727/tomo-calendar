@@ -2,8 +2,6 @@ import { EventApi, formatDate } from "@fullcalendar/core";
 
 interface Props {
   currentEvents: EventApi[];
-  toggleWeekends: () => void;
-  weekendsVisible: boolean;
 }
 
 const renderSidebarEvent = (event: EventApi) => (
@@ -20,7 +18,7 @@ const renderSidebarEvent = (event: EventApi) => (
   </li>
 );
 
-const Sidebar: React.FC<Props> = ({ toggleWeekends, weekendsVisible, currentEvents }) => (
+const Sidebar: React.FC<Props> = ({ currentEvents }) => (
   <div className="demo-app-sidebar">
     <div className="demo-app-sidebar-section">
       <h2>操作方法</h2>
@@ -30,16 +28,7 @@ const Sidebar: React.FC<Props> = ({ toggleWeekends, weekendsVisible, currentEven
         <li>クリックでイベント削除</li>
       </ul>
     </div>
-    <div className="demo-app-sidebar-section">
-      <label>
-        <input
-          type="checkbox"
-          checked={weekendsVisible}
-          onChange={toggleWeekends}
-        />
-        週末を表示
-      </label>
-    </div>
+    
     <div className="demo-app-sidebar-section">
       <h2>予定一覧({currentEvents.length})</h2>
       <ul>{currentEvents.map(renderSidebarEvent)}</ul>

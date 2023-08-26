@@ -7,55 +7,94 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 
-// import { INITIAL_EVENTS } from "./event-utils";
-import { INITIAL_EVENTS, createEventId } from './event.utils'
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
+import { addDoc, collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { db } from "./firebase";
+
+interface EventData {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  allDay: boolean;
+}
 
 function App() {
-  const [weekendsVisible, setWeekendsVisible] = useState(true);
+  const [events, setEvents] = useState<EventData[]>([]);
 
-  const handleWeekendsToggle = useCallback(
-    () => setWeekendsVisible(!weekendsVisible),
-    [weekendsVisible]
-  );
+  useEffect(() => {
+    const fetchEventsFromFirestore = async () => {
+      const querySnapshot = await getDocs(collection(db, "list"));
+      const fetchedEvents = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      })) as EventData[];
+      setEvents(fetchedEvents);
+    };
 
-  const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
-  const handleEvents = useCallback((events: EventApi[]) => {
-    console.log("events:", events);  // 確認用
-    setCurrentEvents(events);
+    fetchEventsFromFirestore();
   }, []);
 
-  const handleDateSelect = useCallback((selectInfo: DateSelectArg) => {
+  console.log(events);
+
+  const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
+  const handleEvents = useCallback((event: EventApi[]) => {
+    // console.log("events:", events);  // 確認用
+    setCurrentEvents(event);
+  }, []);
+
+
+  const handleDateSelect = useCallback(async (selectInfo: DateSelectArg) => {
     let title = prompt("イベントのタイトルを入力してください")?.trim();
     let calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
     if (title) {
-      calendarApi.addEvent({
-        id: createEventId(),
+      let docRef = null; 
+      const eventToAdd = {
         title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay,
-      });
+      };
+      try {
+        // Add the event data to Firestore
+        docRef = await addDoc(collection(db, 'list'), eventToAdd);
+        console.log("Document written with ID: ", docRef.id);
+  
+        calendarApi.addEvent({
+          id: docRef.id,
+          title,
+          start: selectInfo.startStr,
+          end: selectInfo.endStr,
+          allDay: selectInfo.allDay,
+        });
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
     }
   }, []);
   
-  const handleEventClick = useCallback((clickInfo: EventClickArg) => {
+  
+  const handleEventClick = useCallback( async(clickInfo: EventClickArg) => {
     if (
       window.confirm(`このイベント「${clickInfo.event.title}」を削除しますか`)
     ) {
       clickInfo.event.remove();
+      try {
+        // Remove event data from Firestore
+        await deleteDoc(doc(db, 'list', clickInfo.event.id));
+        console.log(`Document with ID ${clickInfo.event.id} deleted`);
+        console.log(clickInfo.event.id)
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+      }
     }
   }, []);
 
   return (
     <div className="demo-app">
-        <Sidebar
-        toggleWeekends={handleWeekendsToggle}
-        weekendsVisible={weekendsVisible}
-        currentEvents={currentEvents}
-      />
+        <Sidebar currentEvents={currentEvents} />
       <div className="demo-app-main">
         <FullCalendar
            plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
@@ -65,21 +104,15 @@ function App() {
             end: "dayGridMonth,timeGridWeek,timeGridDay, listMonth",
           }}
            initialView="dayGridMonth"
-           initialEvents={INITIAL_EVENTS}
            locales={allLocales}
            locale="ja"
           selectable={true}
-          
           select={handleDateSelect}
           eventsSet={handleEvents}
           editable={true}
           eventClick={handleEventClick}
-          selectMirror={true}
-          dayMaxEvents={true}
-          navLinks={true}
-          businessHours={true}
+          events={events}
           handleWindowResize={true}
-          weekends={weekendsVisible}
         />
       </div>
     </div>
