@@ -12,6 +12,6 @@ export const INITIAL_EVENTS: EventInput[] = [
   {
     id: createEventId(),
     title: "Timed event",
-    start: todayStr + "T12:00:00",  // 時刻はTで結ぶ
+    start: todayStr + "T12:00:00",  // 時刻はTで結
   },
 ];
