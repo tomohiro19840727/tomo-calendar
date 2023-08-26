@@ -93,9 +93,9 @@ function App() {
   }, []);
 
   return (
-    <div className="demo-app">
+    <div className="flex min-h-full font-arial font-helvetica-neue font-helvetica font-sans text-base">
         <Sidebar currentEvents={currentEvents} />
-      <div className="demo-app-main">
+      <div className="flex-grow p-12 m-20">
         <FullCalendar
            plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
            headerToolbar={{
