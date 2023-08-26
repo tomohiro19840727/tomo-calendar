@@ -11,6 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import { addDoc, collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
+import "./App.css"
 
 interface EventData {
   id: string;
