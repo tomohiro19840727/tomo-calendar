@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 
 
 const MenuBar = ( ) => {
@@ -14,9 +15,10 @@ const MenuBar = ( ) => {
   </a>
 
   <nav className="gap-12 lg:flex 2xl:ml-16">
-    <a href="/"  className="text-3xl font-semibold text-white hover:text-indigo-300 transition duration-100">Login</a>
+    <Link  to="/"  className="text-3xl font-semibold text-white hover:text-indigo-300 transition duration-100">Home</Link>
+    <Link  to="/login"  className="text-3xl font-semibold text-white hover:text-indigo-300 transition duration-100">Login</Link>
 
-    <a href="/shop" className="font-semibold text-white transition duration-100 hover:text-indigo-300 active:text-indigo-700 text-3xl">会員登録</a>
+    <Link to="/signup" className="font-semibold text-white transition duration-100 hover:text-indigo-300 active:text-indigo-700 text-3xl">会員登録</Link>
 
   </nav>
 </div>
