@@ -10,7 +10,7 @@ const MenuBar = ( ) => {
 <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 md:px-8">
 
   <a href="/" className="text-white inline-flex items-center gap-2.5 text-2xl font-bold md:text-3xl" >
-    タスク管理アプリ
+    タスク管理アプ
   </a>
 
   <nav className="gap-12 lg:flex 2xl:ml-16">
