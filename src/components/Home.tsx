@@ -4,7 +4,8 @@ import { EventApi, EventInput } from "@fullcalendar/core";
 
 
 const Home: React.FC<
-{  events: EventInput[];
+{ 
+   events: EventInput[];
   currentEvents: EventApi[];
   setCurrentEvents: React.Dispatch<React.SetStateAction<EventApi[]>>;
 

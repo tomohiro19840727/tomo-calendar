@@ -1,6 +1,6 @@
 import { EventApi } from "@fullcalendar/core";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebase";
 import "./App.css"
 import MenuBar from "./components/Menubar";
@@ -8,8 +8,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import MemberLogin from "./components/MemberLogin";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
+import MemberLogout from "./components/MemberLogout";
 
 interface EventData {
+  userId: string,
   id: string;
   title: string;
   start: string;
@@ -23,19 +25,40 @@ function App() {
   const [events, setEvents] = useState<EventData[]>([]);
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
   
+  // useEffect(() => {
+  //   const userId = localStorage.getItem('userId');
+  //   const fetchEventsFromFirestore = async () => {
+  //     const q = query(collection(db, 'list'), where('userId', '==', userId));
+  //     const data = await getDocs(q);
+  //     // const querySnapshot = await getDocs(collection(db, "list"));
+  //     // const fetchedEvents = querySnapshot.docs.map((doc) => ({
+  //     //   ...doc.data(),
+  //     //   id: doc.id,
+  //     // })) as EventData[];
+  //     setEvents(data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))) as EventData[];
+  //   };
+  //   fetchEventsFromFirestore();
+  // }, []);
+
   useEffect(() => {
+    const userId = localStorage.getItem('userId');
     const fetchEventsFromFirestore = async () => {
-      const querySnapshot = await getDocs(collection(db, "list"));
-      const fetchedEvents = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
+      const q = query(collection(db, 'list'), where('userId', '==', userId));
+      const querySnapshot = await getDocs(q);
+      const fetchedEvents: EventData[] = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-      })) as EventData[];
+        userId: doc.data().userId,
+        title: doc.data().title,
+        start: doc.data().start,
+        end: doc.data().end,
+        allDay: doc.data().allDay,
+      }));
       setEvents(fetchedEvents);
     };
-
+  
     fetchEventsFromFirestore();
   }, []);
-
+  
 
   return (
     <>
@@ -53,6 +76,9 @@ function App() {
       
       />}/>
       <Route path='/signup' element={<Signup />}/>
+      <Route path='/logout' element={<MemberLogout
+      setIsAuthenticated={setIsAuthenticated}
+      />}/>
       <Route path='/' element={<Home 
         events={events}
         currentEvents={currentEvents}

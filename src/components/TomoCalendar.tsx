@@ -26,15 +26,18 @@ const TomoCalendar:React.FC<{
     let title = prompt("イベントのタイトルを入力してください")?.trim();
     let calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
+    const userId = localStorage.getItem('userId');
     if (title) {
       let docRef = null; 
       const eventToAdd = {
+        userId: userId,
         title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay,
       };
       try {
+        
         // Add the event data to Firestore
         docRef = await addDoc(collection(db, 'list'), eventToAdd);
         console.log("Document written with ID: ", docRef.id);
