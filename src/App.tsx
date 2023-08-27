@@ -9,6 +9,10 @@ import MemberLogin from "./components/MemberLogin";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
 import MemberLogout from "./components/MemberLogout";
+import { useMediaQuery } from 'react-responsive';
+import MobileMenuBar from "./components/MobileMenuBar";
+import MobileHome from "./components/MobileHome";
+
 
 interface EventData {
   userId: string,
@@ -24,6 +28,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated"));
   const [events, setEvents] = useState<EventData[]>([]);
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   
   // useEffect(() => {
   //   const userId = localStorage.getItem('userId');
@@ -63,12 +68,14 @@ function App() {
   return (
     <>
     <Router>
-    <MenuBar />
-        {/* <TomoCalendar 
-        events={events}
-        currentEvents={currentEvents}
-        setCurrentEvents={setCurrentEvents} 
-    /> */}
+    <div>
+        {isMobile ? ( 
+          <MobileMenuBar  />
+          )  : 
+          (
+            <MenuBar  /> )}
+      </div>
+        
       <Routes>
       <Route path='/login' element={<MemberLogin 
        setUserId={setUserId}
@@ -79,11 +86,28 @@ function App() {
       <Route path='/logout' element={<MemberLogout
       setIsAuthenticated={setIsAuthenticated}
       />}/>
-      <Route path='/' element={<Home 
-        events={events}
-        currentEvents={currentEvents}
-        setCurrentEvents={setCurrentEvents} 
-      />}/>
+
+      <Route path='/' element={
+       <div>
+       {isMobile ? ( 
+         <MobileHome  
+         events={events}
+         currentEvents={currentEvents}
+         setCurrentEvents={setCurrentEvents}
+         />
+         )  : 
+         (
+          <Home 
+          events={events}
+          currentEvents={currentEvents}
+          setCurrentEvents={setCurrentEvents} 
+        /> )}
+     </div>
+       }/>
+
+     
+
+
       </Routes>
     </Router>
     </>
